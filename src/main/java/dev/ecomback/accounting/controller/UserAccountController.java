@@ -1,0 +1,98 @@
+package dev.ecomback.accounting.controller;
+
+import dev.ecomback.accounting.dto.AddressDto;
+import dev.ecomback.accounting.dto.UserDto;
+import dev.ecomback.accounting.dto.UserEditDto;
+import dev.ecomback.accounting.dto.UserRegisterDto;
+import dev.ecomback.accounting.service.UserAccountService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.Base64;
+import java.util.List;
+
+@RestController
+@RequestMapping("/users")
+@RequiredArgsConstructor
+@CrossOrigin
+public class UserAccountController {
+
+	final UserAccountService userAccountService;
+
+	// Login typically done via POST to /login (can be outside users resource)
+	@PostMapping("/login")
+	public UserDto login(@RequestHeader("Authorization") String token) {
+		token = token.split(" ")[1];
+		System.out.println("con login");
+		String credentials = new String(Base64.getDecoder().decode(token));
+		return userAccountService.getUser(credentials.split(":")[0]);
+	}
+
+	// Register new user
+	@PostMapping("/register")
+	public UserDto register(@RequestBody UserRegisterDto userRegisterDto) {
+		System.out.println("con register");
+		return userAccountService.register(userRegisterDto);
+	}
+
+	// Add role to user
+	@PutMapping("/{username}/roles/{role}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void addRole(@PathVariable String username, @PathVariable String role) {
+		userAccountService.changeRolesList(username, role, true);
+	}
+
+	// Remove role from user
+	@DeleteMapping("/{username}/roles/{role}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteRole(@PathVariable String username, @PathVariable String role) {
+		userAccountService.changeRolesList(username, role, false);
+	}
+
+	// Change password for authenticated user
+	@PutMapping("/password")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void changePassword(Principal principal, @RequestHeader("X-Password") String newPassword) {
+		userAccountService.changePassword(principal.getName(), newPassword);
+	}
+
+	// Request password recovery link by username
+	@PostMapping("/password/recovery/{username}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void recoveryPasswordLink(@PathVariable String username) {
+		userAccountService.recoveryPasswordLink(username);
+	}
+
+	// Reset password by recovery token
+	@PutMapping("/password/recovery/{token}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void recoveryPassword(@PathVariable String token, @RequestHeader("X-Password") String newPassword) {
+		userAccountService.recoveryPassword(token, newPassword);
+	}
+
+	// Get all users
+	@GetMapping
+	public List<UserDto> getAllUsers() {
+		return userAccountService.getAllUsers();
+	}
+
+	// Remove a user
+	@DeleteMapping("/{login}")
+	public UserDto removeUser(@PathVariable String login) {
+		return userAccountService.removeUser(login);
+	}
+
+	// Update authenticated user's data
+	@PutMapping
+	public UserDto updateUser(Principal principal, @RequestBody UserEditDto userEditDto) {
+		return userAccountService.updateUser(principal.getName(), userEditDto);
+	}
+
+	@PostMapping("/address/{login}")
+	public UserDto updateAddress(@PathVariable String login, @RequestBody AddressDto addressDto) {
+		return userAccountService.updateAddress(login,addressDto);
+	}
+
+}
