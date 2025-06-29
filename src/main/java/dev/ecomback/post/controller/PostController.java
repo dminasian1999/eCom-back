@@ -37,6 +37,11 @@ public class PostController {
         return postService.addNewPost(author, newPostDto);
     }
 
+    @PostMapping("/posts/wishList")
+    public List<PostDto> findPostsByIds(@RequestBody String [] ids) {
+        return postService.findPostsByIds(ids);
+    }
+
 
 
 

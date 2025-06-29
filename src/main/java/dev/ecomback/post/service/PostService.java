@@ -32,5 +32,5 @@ public interface PostService {
 
     Adjustment adjust(String id, String author, int num, boolean add);
 
-
+    List<PostDto> findPostsByIds(String [] ids);
 }

@@ -37,6 +37,18 @@ public class UserAccountController {
 		return userAccountService.register(userRegisterDto);
 	}
 
+	@PutMapping("/{username}/wishList/{productId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void addWishList(@PathVariable String username, @PathVariable String productId) {
+		userAccountService.changeWishList(username, productId, true);
+	}
+
+	// Remove role from user
+	@DeleteMapping("/{username}/wishList/{productId}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteWishList(@PathVariable String username, @PathVariable String productId) {
+		userAccountService.changeWishList(username, productId, false);
+	}
 	// Add role to user
 	@PutMapping("/{username}/roles/{role}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -77,6 +89,8 @@ public class UserAccountController {
 	public List<UserDto> getAllUsers() {
 		return userAccountService.getAllUsers();
 	}
+
+
 
 	// Remove a user
 	@DeleteMapping("/{login}")

@@ -19,10 +19,10 @@ public class Adjustment {
         date = LocalDateTime.now();
     }
 
-    public Adjustment(int num, boolean add, String author) {
+    public Adjustment(int num, boolean add, String id) {
         this();
         this.quantity = num;
         this.add = add;
-        this.user = author;
+        this.user = id;
     }
 }

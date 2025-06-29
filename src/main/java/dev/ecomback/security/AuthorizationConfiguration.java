@@ -31,10 +31,15 @@ public class AuthorizationConfiguration {
                 .requestMatchers(HttpMethod.POST, "/users/recovery/**").permitAll()
                 // Administrator-Only Endpoints
                 .requestMatchers(HttpMethod.GET, "/users").permitAll()
-                .requestMatchers( "/users/{username}/roles/{role}").hasRole(Role.ADMINISTRATOR.name())
+                .requestMatchers("/users/{username}/roles/{role}").hasRole(Role.ADMINISTRATOR.name())
+                .requestMatchers(HttpMethod.PUT,"/users/{username}/wishList/{productId}")
+                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
+                .requestMatchers(HttpMethod.DELETE,"/users/{username}/wishList/{productId}")
+                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
+
                 .requestMatchers(HttpMethod.POST, "/users/address/{login}")
                 .access(new WebExpressionAuthorizationManager("#login == authentication.name"))
-
+                .requestMatchers("/posts/wishList").permitAll()
 
 
                 // Delete User (User or Admin)

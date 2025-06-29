@@ -182,5 +182,18 @@ public class UserAccountServiceImpl implements UserAccountService, CommandLineRu
 	}
 
 
-
+	@Override
+	public void changeWishList(String login, String productId, boolean isAdd) {
+		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(UserNotFoundException::new);
+		boolean res;
+		if (isAdd) {
+			res = userAccount.addWishList(productId);
+		} else {
+			res = userAccount.removeWishList(productId);
+		}
+		if (res) {
+			userAccountRepository.save(userAccount);
+		}
+//		return modelMapper.map(userAccount, RolesDto.class);
+	}
 }

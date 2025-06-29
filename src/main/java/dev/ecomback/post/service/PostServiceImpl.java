@@ -174,6 +174,13 @@ public class PostServiceImpl implements PostService {
         return adjustment;
     }
 
+    @Override
+    public List<PostDto> findPostsByIds(String [] ids) {
+        return postRepository.findByIdIn(ids)
+                .map(p -> modelMapper.map(p, PostDto.class))
+                .collect(Collectors.toList());
+    }
+
 
     @Override
 //    public String saveFiles(MultipartFile file) {
