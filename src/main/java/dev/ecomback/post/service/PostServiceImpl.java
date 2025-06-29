@@ -176,26 +176,42 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public String saveFiles(MultipartFile file) {
-        try {
-            String s3FileName = file.getOriginalFilename();
-            BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
-            AmazonS3 amazonS3Client = AmazonS3ClientBuilder.standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                    .withRegion(Regions.US_EAST_1)
-                    .build();
+//    public String saveFiles(MultipartFile file) {
+        public String saveFiles(MultipartFile file) {
+            try {
+                String fileName = file.getOriginalFilename();
+                if (fileName == null || file.isEmpty()) {
+                    throw new IllegalArgumentException("Invalid file");
+                }
 
-            InputStream inputStream = file.getInputStream();
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(file.getContentType());
-            String bucketName = "file-upload-dav";
-            objectMetadata.setContentLength(file.getSize());
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, s3FileName, inputStream, objectMetadata);
-            amazonS3Client.putObject(putObjectRequest);
-            return String.format("https://%s.s3.amazonaws.com/%s", bucketName, s3FileName);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to upload file to S3", e);
+                String contentType = file.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    throw new IllegalArgumentException("Only image files are allowed.");
+                }
+
+                BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+                AmazonS3 amazonS3Client = AmazonS3ClientBuilder.standard()
+                        .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                        .withRegion(Regions.US_EAST_1)
+                        .build();
+
+                InputStream inputStream = file.getInputStream();
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentType(contentType);
+                metadata.setContentLength(file.getSize());
+
+                String bucketName = "file-upload-dav";
+                String key = "stationery/" + fileName;
+
+                amazonS3Client.putObject(new PutObjectRequest(bucketName, key, inputStream, metadata));
+
+                return String.format("https://%s.s3.amazonaws.com/%s", bucketName, key);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("S3 upload failed: " + e.getMessage(), e);
+            }
         }
-    }
 
-}
+
+    }
