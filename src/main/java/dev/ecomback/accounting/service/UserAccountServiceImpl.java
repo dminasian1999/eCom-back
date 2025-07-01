@@ -2,10 +2,7 @@ package dev.ecomback.accounting.service;
 
 import dev.ecomback.accounting.dao.UserAccountRepository;
 import dev.ecomback.accounting.dao.UserTokenRepository;
-import dev.ecomback.accounting.dto.AddressDto;
-import dev.ecomback.accounting.dto.UserDto;
-import dev.ecomback.accounting.dto.UserEditDto;
-import dev.ecomback.accounting.dto.UserRegisterDto;
+import dev.ecomback.accounting.dto.*;
 import dev.ecomback.accounting.dto.exceptions.InvalidEmailExeption;
 import dev.ecomback.accounting.dto.exceptions.TokenExpiredExeption;
 import dev.ecomback.accounting.dto.exceptions.UserExistsException;
@@ -183,7 +180,7 @@ public class UserAccountServiceImpl implements UserAccountService, CommandLineRu
 
 
 	@Override
-	public void changeWishList(String login, String productId, boolean isAdd) {
+	public UserDto changeWishList(String login, String productId, boolean isAdd) {
 		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(UserNotFoundException::new);
 		boolean res;
 		if (isAdd) {
@@ -194,6 +191,21 @@ public class UserAccountServiceImpl implements UserAccountService, CommandLineRu
 		if (res) {
 			userAccountRepository.save(userAccount);
 		}
-//		return modelMapper.map(userAccount, RolesDto.class);
+		return modelMapper.map(userAccount, UserDto.class);
 	}
+
+	@Override
+	public UserDto changeCartList(String login, String productId, boolean isAdd) {
+
+		UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(UserNotFoundException::new);
+		int res;
+		if (isAdd) {
+			 userAccount.addCartEntry(productId);
+		} else {
+			 userAccount.removeCartEntry(productId);
+		}
+//		if (res >0) {
+			userAccountRepository.save(userAccount);
+//		}
+		return modelMapper.map(userAccount, UserDto.class);	}
 }

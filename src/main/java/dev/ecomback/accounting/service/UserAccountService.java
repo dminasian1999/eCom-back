@@ -27,7 +27,8 @@ public interface UserAccountService {
 	UserDto updateUser(String login, UserEditDto userEditDto);
 	UserDto updateAddress(String login, AddressDto addressDto);
 
-	void changeWishList(String login, String productId, boolean isAddRole);
+	UserDto changeWishList(String login, String productId, boolean isAdd);
 
+	UserDto changeCartList(String login, String productId, boolean isAdd);
 
 }

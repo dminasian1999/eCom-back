@@ -20,7 +20,6 @@ public class UserDto {
 	Set<String> roles;
 	AddressDto address;
 	Map<String, Integer> cart;
-
 	Set<String> wishList;
 
 	List<Order> orders;

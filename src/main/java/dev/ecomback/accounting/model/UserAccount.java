@@ -68,12 +68,13 @@ public class UserAccount {
 
         return wishList.remove(productId);
     }
-    public void addCartEntry(String productId, int quantity) {
-        cart.put(productId, quantity);
+    public void addCartEntry(String productId) {
+             cart.put(productId.toString(),1);
+
     }
 
     public void removeCartEntry(String productId) {
-        cart.remove(productId);
+         cart.remove(productId);
     }
 
     public void addOrder(Order order) {

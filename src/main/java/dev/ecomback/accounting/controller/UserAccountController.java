@@ -38,16 +38,14 @@ public class UserAccountController {
 	}
 
 	@PutMapping("/{username}/wishList/{productId}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void addWishList(@PathVariable String username, @PathVariable String productId) {
-		userAccountService.changeWishList(username, productId, true);
+	public UserDto addWishList(@PathVariable String username, @PathVariable String productId) {
+		return userAccountService.changeWishList(username, productId, true);
 	}
 
 	// Remove role from user
 	@DeleteMapping("/{username}/wishList/{productId}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteWishList(@PathVariable String username, @PathVariable String productId) {
-		userAccountService.changeWishList(username, productId, false);
+	public UserDto deleteWishList(@PathVariable String username, @PathVariable String productId) {
+		return userAccountService.changeWishList(username, productId, false);
 	}
 	// Add role to user
 	@PutMapping("/{username}/roles/{role}")
@@ -109,4 +107,14 @@ public class UserAccountController {
 		return userAccountService.updateAddress(login,addressDto);
 	}
 
+	@PutMapping("/{username}/cartList/{productId}")
+	public UserDto addCartList(@PathVariable String username, @PathVariable String productId) {
+		return userAccountService.changeCartList(username, productId, true);
+	}
+
+	// Remove role from user
+	@DeleteMapping("/{username}/cartList/{productId}")
+	public UserDto deleteCartList(@PathVariable String username, @PathVariable String productId) {
+		return userAccountService.changeCartList(username, productId, false);
+	}
 }

@@ -37,6 +37,12 @@ public class AuthorizationConfiguration {
                 .requestMatchers(HttpMethod.DELETE,"/users/{username}/wishList/{productId}")
                 .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
 
+
+                .requestMatchers(HttpMethod.PUT,"/users/{username}/cartList/{productId}")
+                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
+                .requestMatchers(HttpMethod.DELETE,"/users/{username}/cartList/{productId}")
+                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
+
                 .requestMatchers(HttpMethod.POST, "/users/address/{login}")
                 .access(new WebExpressionAuthorizationManager("#login == authentication.name"))
                 .requestMatchers("/posts/wishList").permitAll()
