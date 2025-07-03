@@ -20,7 +20,7 @@ public class AuthorizationConfiguration {
     public SecurityFilterChain web(HttpSecurity http) throws Exception {
         http.httpBasic(Customizer.withDefaults());
         http.cors(Customizer.withDefaults());
-        http.csrf(csrf -> csrf.disable()); // Disable CSRF for simplicity in APIs
+        http.csrf(AbstractHttpConfigurer::disable); // Disable CSRF for simplicity in APIs
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)); // Always create sessions
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST,"/users/login")
