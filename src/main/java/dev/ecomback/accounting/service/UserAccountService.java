@@ -4,6 +4,7 @@ import dev.ecomback.accounting.dto.AddressDto;
 import dev.ecomback.accounting.dto.UserDto;
 import dev.ecomback.accounting.dto.UserEditDto;
 import dev.ecomback.accounting.dto.UserRegisterDto;
+import dev.ecomback.accounting.model.CartItem;
 
 import java.util.List;
 
@@ -29,6 +30,6 @@ public interface UserAccountService {
 
 	UserDto changeWishList(String login, String productId, boolean isAdd);
 
-	UserDto changeCartList(String login, String productId, boolean isAdd);
+	UserDto changeCartList(String login, CartItem cartItem, boolean isAdd);
 
 }

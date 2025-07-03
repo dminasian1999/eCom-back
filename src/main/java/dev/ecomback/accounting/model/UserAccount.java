@@ -1,5 +1,6 @@
 package dev.ecomback.accounting.model;
 
+import dev.ecomback.accounting.dto.Cart;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -23,7 +24,7 @@ public class UserAccount {
     Set<Role> roles;
     @Setter
     Address address;
-    Map<String, Integer> cart;
+    Cart cart;
 
     Set<String> wishList;
 
@@ -32,9 +33,9 @@ public class UserAccount {
 
     public UserAccount() {
         roles = new HashSet<>();
-        cart = new HashMap<>();
         wishList = new HashSet<>();
         orders = new ArrayList<>();
+        cart = new Cart();
 
         addRole("USER");
 //		this.createdAt = LocalDateTime.now();
@@ -68,13 +69,13 @@ public class UserAccount {
 
         return wishList.remove(productId);
     }
-    public void addCartEntry(String productId) {
-             cart.put(productId.toString(),1);
+    public boolean addCartEntry(CartItem  cartItem) {
+        return cart.addCartEntry(cartItem);
 
     }
 
-    public void removeCartEntry(String productId) {
-         cart.remove(productId);
+    public boolean removeCartEntry(CartItem cartItem) {
+        return cart.removeCartEntry(cartItem);
     }
 
     public void addOrder(Order order) {

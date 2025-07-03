@@ -1,5 +1,6 @@
 package dev.ecomback.accounting.dto;
 
+import dev.ecomback.accounting.model.CartItem;
 import dev.ecomback.accounting.model.Order;
 import lombok.*;
 
@@ -19,7 +20,7 @@ public class UserDto {
 	@Singular
 	Set<String> roles;
 	AddressDto address;
-	Map<String, Integer> cart;
+	Cart cart;
 	Set<String> wishList;
 
 	List<Order> orders;

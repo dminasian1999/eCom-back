@@ -20,10 +20,10 @@ public class AuthorizationConfiguration {
     public SecurityFilterChain web(HttpSecurity http) throws Exception {
         http.httpBasic(Customizer.withDefaults());
         http.cors(Customizer.withDefaults());
-        http.csrf(AbstractHttpConfigurer::disable); // Disable CSRF for simplicity in APIs
+        http.csrf(csrf -> csrf.disable()); // Disable CSRF for simplicity in APIs
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)); // Always create sessions
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/users/login")
+                .requestMatchers(HttpMethod.POST,"/users/login")
                 .permitAll()
                 // Public Endpoints
                 .requestMatchers("/users/register", "/posts").permitAll()
@@ -38,12 +38,17 @@ public class AuthorizationConfiguration {
                 .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
 
 
-                .requestMatchers(HttpMethod.PUT,"/users/{username}/cartList/{productId}")
-                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
-                .requestMatchers(HttpMethod.DELETE,"/users/{username}/cartList/{productId}")
-                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
+//                .requestMatchers(HttpMethod.PUT,"/users/{username}/cartList/{productId}")
+//                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
+//                .requestMatchers(HttpMethod.DELETE,"/users/{username}/cartList/{productId}")
+//                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
 
-                .requestMatchers(HttpMethod.POST, "/users/address/{login}")
+                        .requestMatchers(HttpMethod.PUT,"/users/{username}/cartList")
+                        .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
+                        .requestMatchers(HttpMethod.DELETE,"/users/{username}/cartList")
+                        .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
+
+                        .requestMatchers(HttpMethod.POST, "/users/address/{login}")
                 .access(new WebExpressionAuthorizationManager("#login == authentication.name"))
                 .requestMatchers("/posts/wishList").permitAll()
 
