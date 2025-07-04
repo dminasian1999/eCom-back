@@ -19,5 +19,7 @@ public class PostDto {
     private Double sell;
     private Double buy;
     private String category;
+    private String type;
+    private String desc;
     private LocalDateTime dateCreated;
 }

@@ -23,14 +23,19 @@ public class Post {
     private double sell;
     private double buy;
     private String category;
+    private String type;
+    private String desc;
     LocalDateTime dateCreated;
+
     public Post() {
         this.dateCreated = LocalDateTime.now();
     }
 
-    public Post(String category, double buy, double sell, int quantity, String imageUrl, String name) {
+    public Post(String category, String type, String desc, double buy, double sell, int quantity, String imageUrl, String name) {
         this();
         this.category = category;
+        this.type = type;
+        this.desc =  desc;
         this.buy = buy;
         this.sell = sell;
         this.quantity = quantity;

@@ -16,6 +16,8 @@ public class NewPostDto {
     private Double sell;
     private Double buy;
     private String category;
+    private String type;
+    private String desc;
 
 
 }

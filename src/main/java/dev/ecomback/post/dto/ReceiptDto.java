@@ -21,6 +21,8 @@ public class ReceiptDto {
     private Double income;
     private String seller;
     private String category;
+    private String type;
+    private String desc;
     private LocalDateTime dateCreated;
 
 
