@@ -16,6 +16,7 @@ public interface PostService {
 
     PostDto findPostById(String id);
 
+    List<PostDto> findPostByCategory(String category);
 
     List<PostDto> findPostsWithCriteriaAndSort(String field, Boolean asc, QueryDto query);
 

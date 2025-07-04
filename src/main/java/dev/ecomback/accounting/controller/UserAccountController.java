@@ -108,23 +108,19 @@ public class UserAccountController {
         return userAccountService.updateAddress(login, addressDto);
     }
 
-    //	@PutMapping("/{username}/cartList/{productId}")
-//	public UserDto addCartList(@PathVariable String username, @PathVariable String productId) {
-//		return userAccountService.changeCartList(username, productId, true);
-//	}
+
     @PutMapping("/{username}/cartList")
     public UserDto addCartList(@PathVariable String username, @RequestBody CartItem cartItem) {
         return userAccountService.changeCartList(username, cartItem, true);
     }
 
-    // Remove role from user
-//    @DeleteMapping("/{username}/cartList/{productId}")
-//    public UserDto deleteCartList(@PathVariable String username, @PathVariable String productId) {
-//        return userAccountService.changeCartList(username, productId, false);
-//    }
-
     @DeleteMapping("/{username}/cartList")
     public UserDto deleteCartList(@PathVariable String username, @RequestBody CartItem cartItem) {
         return userAccountService.changeCartList(username, cartItem, false);
+    }
+
+    @PutMapping("/{username}/cartList/{productId}/update/{isAdd}")
+    public UserDto updateCartList(@PathVariable String username, @PathVariable String productId,@PathVariable boolean isAdd) {
+        return userAccountService.updateCartList(username, productId, isAdd);
     }
 }

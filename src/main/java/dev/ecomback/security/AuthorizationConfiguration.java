@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @Configuration
 @RequiredArgsConstructor
@@ -38,8 +40,8 @@ public class AuthorizationConfiguration {
                 .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
 
 
-//                .requestMatchers(HttpMethod.PUT,"/users/{username}/cartList/{productId}")
-//                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
+                .requestMatchers(HttpMethod.PUT,"/{username}/cartList/{productId}/update/{isAdd}")
+                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
 //                .requestMatchers(HttpMethod.DELETE,"/users/{username}/cartList/{productId}")
 //                .access(new WebExpressionAuthorizationManager("#username == authentication.name"))
 
@@ -70,6 +72,8 @@ public class AuthorizationConfiguration {
                 .requestMatchers(HttpMethod.PUT, "/post/{id}")
                 .permitAll()
                 // View Post (Public)
+                .requestMatchers(HttpMethod.GET, "/posts/category/{category}").permitAll()
+
                 .requestMatchers(HttpMethod.GET, "/post/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/post/search/{field}/{asc}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/posts/receipts").permitAll()

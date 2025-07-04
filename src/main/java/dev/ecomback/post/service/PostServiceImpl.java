@@ -95,6 +95,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostDto> findPostByCategory(String category) {
+        return postRepository.findByCategory(category)
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+    }
+
+    @Override
     public List<PostDto> findPostsWithCriteriaAndSort(String sortField, Boolean asc, QueryDto queryDto) {
         Query mongoQuery = new Query();
 
@@ -159,23 +166,24 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
         return modelMapper.map(post, PostDto.class);
     }
+
     @Override
     public Adjustment adjust(String id, String author, int num, boolean add) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException());
-        Adjustment adjustment =  new Adjustment(num,add,author);
+        Adjustment adjustment = new Adjustment(num, add, author);
         post.adjust(adjustment);
         postRepository.save(post);
-        double totalSell = post.getSell()*num;
-        double totalbuy = post.getBuy()*num;
-        double income = post.getSell()-post.getBuy();
+        double totalSell = post.getSell() * num;
+        double totalbuy = post.getBuy() * num;
+        double income = post.getSell() - post.getBuy();
 
-        Receipt receipt = new Receipt(post.getName(),post.getImageUrl(),num,totalSell,totalbuy,totalSell-totalbuy ,author,post.getCategory());
+        Receipt receipt = new Receipt(post.getName(), post.getImageUrl(), num, totalSell, totalbuy, totalSell - totalbuy, author, post.getCategory());
         receiptRepository.save(receipt);
         return adjustment;
     }
 
     @Override
-    public List<PostDto> findPostsByIds(String [] ids) {
+    public List<PostDto> findPostsByIds(String[] ids) {
         return postRepository.findByIdIn(ids)
                 .map(p -> modelMapper.map(p, PostDto.class))
                 .collect(Collectors.toList());
@@ -184,41 +192,41 @@ public class PostServiceImpl implements PostService {
 
     @Override
 //    public String saveFiles(MultipartFile file) {
-        public String saveFiles(MultipartFile file) {
-            try {
-                String fileName = file.getOriginalFilename();
-                if (fileName == null || file.isEmpty()) {
-                    throw new IllegalArgumentException("Invalid file");
-                }
-
-                String contentType = file.getContentType();
-                if (contentType == null || !contentType.startsWith("image/")) {
-                    throw new IllegalArgumentException("Only image files are allowed.");
-                }
-
-                BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
-                AmazonS3 amazonS3Client = AmazonS3ClientBuilder.standard()
-                        .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                        .withRegion(Regions.US_EAST_1)
-                        .build();
-
-                InputStream inputStream = file.getInputStream();
-                ObjectMetadata metadata = new ObjectMetadata();
-                metadata.setContentType(contentType);
-                metadata.setContentLength(file.getSize());
-
-                String bucketName = "file-upload-dav";
-                String key = "stationery/" + fileName;
-
-                amazonS3Client.putObject(new PutObjectRequest(bucketName, key, inputStream, metadata));
-
-                return String.format("https://%s.s3.amazonaws.com/%s", bucketName, key);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("S3 upload failed: " + e.getMessage(), e);
+    public String saveFiles(MultipartFile file) {
+        try {
+            String fileName = file.getOriginalFilename();
+            if (fileName == null || file.isEmpty()) {
+                throw new IllegalArgumentException("Invalid file");
             }
+
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new IllegalArgumentException("Only image files are allowed.");
+            }
+
+            BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+            AmazonS3 amazonS3Client = AmazonS3ClientBuilder.standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+                    .withRegion(Regions.US_EAST_1)
+                    .build();
+
+            InputStream inputStream = file.getInputStream();
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(contentType);
+            metadata.setContentLength(file.getSize());
+
+            String bucketName = "file-upload-dav";
+            String key = "stationery/" + fileName;
+
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, key, inputStream, metadata));
+
+            return String.format("https://%s.s3.amazonaws.com/%s", bucketName, key);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("S3 upload failed: " + e.getMessage(), e);
         }
-
-
     }
+
+
+}

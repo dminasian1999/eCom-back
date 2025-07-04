@@ -32,4 +32,7 @@ public interface UserAccountService {
 
 	UserDto changeCartList(String login, CartItem cartItem, boolean isAdd);
 
+	UserDto updateCartList(String login, String cartItemId, boolean isAdd);
+
+
 }

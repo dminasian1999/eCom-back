@@ -9,9 +9,22 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"product"})
+@EqualsAndHashCode(of = {"cartItemId"})
 public class CartItem {
+     String cartItemId;
+    private Post product;
+    private int quantity;
 
-    Post product;
-    Integer quantity;
+    public boolean increment() {
+        quantity++;
+        return true;
+    }
+
+    public boolean decrement() {
+        if (quantity > 1) {
+            quantity--;
+            return true;
+        }
+        return false;
+    }
 }

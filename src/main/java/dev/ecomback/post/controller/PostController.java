@@ -22,7 +22,7 @@ public class PostController {
     @DeleteMapping("/post/file/delete/{file}")
     public void deleteFile(@PathVariable String file) {
         System.out.println("delete");
-         postService.deleteFileFromS3(file);
+        postService.deleteFileFromS3(file);
     }
 
     @PostMapping("/post/file/upload")
@@ -38,19 +38,20 @@ public class PostController {
     }
 
     @PostMapping("/posts/wishList")
-    public List<PostDto> findPostsByIds(@RequestBody String [] ids) {
+    public List<PostDto> findPostsByIds(@RequestBody String[] ids) {
         return postService.findPostsByIds(ids);
     }
 
-
+    @GetMapping("/posts/category/{category}")
+    public List<PostDto> findPostByCategory(@PathVariable String category) {
+        return postService.findPostByCategory(category);
+    }
 
 
     @GetMapping("/post/{id}")
     public PostDto findPostById(@PathVariable String id) {
         return postService.findPostById(id);
     }
-
-
 
 
     @PostMapping("/post/search/{field}/{asc}")
@@ -78,9 +79,10 @@ public class PostController {
     public PostDto updatePost(@PathVariable String id, @RequestBody NewPostDto newPostDto) {
         return postService.updatePost(id, newPostDto);
     }
+
     @PostMapping("/post/{id}/adjust/{add}/number/{num}/{author}")
     public Adjustment adjust(@PathVariable String id, @PathVariable String author, @PathVariable Boolean add, @PathVariable int num) {
-        return  postService.adjust(id,author,num,add);
+        return postService.adjust(id, author, num, add);
 
     }
 

@@ -1,6 +1,7 @@
 package dev.ecomback.accounting.dto;
 
 import dev.ecomback.accounting.model.CartItem;
+import dev.ecomback.post.dto.exceptions.PostNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,14 +18,44 @@ public class Cart {
     Double totalPrice;
 
 
-
-    public boolean addCartEntry(CartItem  cartItem) {
-        return items. add(cartItem);
+    public boolean addCartEntry(CartItem cartItem) {
+        boolean res;
+        res = items.add(cartItem);
+        recalculateTotalPrice();
+        return res;
 
     }
 
     public boolean removeCartEntry(CartItem cartItem) {
-        return items.remove(cartItem);
+        boolean res;
+        res = items.remove(cartItem);
+        recalculateTotalPrice();
+        return res;
+
+    }
+
+    public void recalculateTotalPrice() {
+        this.totalPrice = items.stream()
+                .mapToDouble(item -> item.getQuantity() * item.getProduct().getSell())
+                .sum();
+    }
+
+    public boolean updateCartList(String cartItemId, boolean isAdd) {
+        boolean res;
+
+        if (isAdd) {
+            res = items.stream()
+                    .filter(item -> item.getCartItemId().equals(cartItemId))
+                    .findFirst()
+                    .orElseThrow(PostNotFoundException::new).increment();
+        } else {
+            res = items.stream()
+                    .filter(item -> item.getCartItemId().equals(cartItemId))
+                    .findFirst()
+                    .orElseThrow(PostNotFoundException::new).decrement();
+        }
+        recalculateTotalPrice();
+        return res;
     }
 
 }

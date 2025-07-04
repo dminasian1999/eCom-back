@@ -204,13 +204,44 @@ public class UserAccountServiceImpl implements UserAccountService, CommandLineRu
         UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(UserNotFoundException::new);
         boolean res;
         if (isAdd) {
-            res =   userAccount.getCart().addCartEntry(cartItem);
+            res = userAccount.getCart().addCartEntry(cartItem);
         } else {
-            res =  userAccount.getCart().removeCartEntry(cartItem);
+            res = userAccount.getCart().removeCartEntry(cartItem);
         }
         if (res) {
             userAccountRepository.save(userAccount);
         }
         return modelMapper.map(userAccount, UserDto.class);
+    }
+
+    @Override
+    public UserDto updateCartList(String login, String cartItemId, boolean isAdd) {
+
+        UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(UserNotFoundException::new);
+        boolean res;
+//        if (isAdd) {
+//            res = userAccount.getCart().updateCartList(cartItemId);
+//        } else {
+            res = userAccount.getCart().updateCartList(cartItemId,isAdd);
+//        }
+        if (res) {
+            userAccountRepository.save(userAccount);
+        }
+//        if (isAdd) {
+//            res = userAccount.getCart().getItems().stream()
+//                    .filter(item -> item.getCartItemId().equals(cartItemId))
+//                    .findFirst()
+//                    .orElse(null).increment();
+//        } else {
+//            res = userAccount.getCart().getItems().stream()
+//                    .filter(item -> item.getCartItemId().equals(cartItemId))
+//                    .findFirst()
+//                    .orElse(null).decrement();
+//        }
+        if (res) {
+            userAccountRepository.save(userAccount);
+        }
+        return modelMapper.map(userAccount, UserDto.class);
+
     }
 }

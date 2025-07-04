@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 public interface PostRepository extends CrudRepository<Post, String> {
 
 	Stream<Post> findByDateCreatedBetween(LocalDate from, LocalDate to);
+	Stream<Post> findByCategory(String category);
 
 
 	Stream<Post> findByOrderByDateCreatedDesc();
