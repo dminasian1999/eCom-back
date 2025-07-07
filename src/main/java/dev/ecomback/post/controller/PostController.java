@@ -6,6 +6,7 @@ import dev.ecomback.post.dto.QueryDto;
 import dev.ecomback.post.dto.ReceiptDto;
 import dev.ecomback.post.model.Adjustment;
 import dev.ecomback.post.service.PostService;
+import dev.ecomback.post.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
-public class PostController {
+public class PostController  {
 
     final PostService postService;
 
@@ -46,6 +47,19 @@ public class PostController {
     public List<PostDto> findPostByCategory(@PathVariable String category) {
         return postService.findPostByCategory(category);
     }
+    @PostMapping("/posts/search")
+    public List<PostDto> findPostsWithCriteriaAndSort(@RequestBody QueryDto query) {
+        return postService.findPostsWithCriteriaAndSort( query);
+    }
+
+    @GetMapping("/posts/criteria/{criteria}/sort/{sort}/asc/{asc}")
+    public List<PostDto> findByCriteriaAndSort(@PathVariable String criteria,@PathVariable String sort,@PathVariable Boolean asc) {
+        return postService.findByCriteriaAndSort(criteria,sort,asc);
+    }
+    @GetMapping("/posts/type/{criteria}/sort/{sort}/asc/{asc}")
+    public List<PostDto> findByTypeAndSort(@PathVariable String criteria,@PathVariable String sort,@PathVariable Boolean asc) {
+        return postService.findByTypeAndSort(criteria,sort,asc);
+    }
 
 
     @GetMapping("/post/{id}")
@@ -54,10 +68,7 @@ public class PostController {
     }
 
 
-    @PostMapping("/post/search/{field}/{asc}")
-    public List<PostDto> findPostsWithCriteriaAndSort(@PathVariable String field, @PathVariable Boolean asc, @RequestBody QueryDto query) {
-        return postService.findPostsWithCriteriaAndSort(field, asc, query);
-    }
+
 
     @GetMapping("/posts/receipts")
     public List<ReceiptDto> getAllReceipts() {
@@ -80,15 +91,12 @@ public class PostController {
         return postService.updatePost(id, newPostDto);
     }
 
+
     @PostMapping("/post/{id}/adjust/{add}/number/{num}/{author}")
     public Adjustment adjust(@PathVariable String id, @PathVariable String author, @PathVariable Boolean add, @PathVariable int num) {
         return postService.adjust(id, author, num, add);
 
     }
 
-//    @PutMapping("/post/{id}/comment/{author}")
-//    public PostDto addComment(@PathVariable String id, @PathVariable String author,
-//                              @RequestBody NewCommentDto newCommentDto) {
-//        return postService.addComment(id, author, newCommentDto);
-//    }
+
 }

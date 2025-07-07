@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -102,38 +103,109 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> findPostsWithCriteriaAndSort(String sortField, Boolean asc, QueryDto queryDto) {
+    public List<PostDto> findByCategoryAndSellBetween(Double minPrice, Double maxPrice) {
+        return postRepository.findByCategoryAndSellBetween(minPrice, maxPrice)
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+    }
+
+    @Override
+    public List<PostDto> findByCategoryContainsIgnoreCase(String query) {
+        return postRepository.findByCategoryContainsIgnoreCase(query)
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+    }
+
+    @Override
+    public List<PostDto> findByTypeAndSort(String criteria, String sort, Boolean asc) {
+        boolean isAsc = Boolean.TRUE.equals(asc);
+
+        Stream<Post> resultStream = switch (sort)  {
+            case "sell" -> isAsc
+                    ? postRepository.findByTypeOrderBySellAsc(criteria)
+                    : postRepository.findByTypeOrderBySellDesc(criteria);
+            case "name" -> isAsc
+                    ? postRepository.findByTypeOrderByNameAsc(criteria)
+                    : postRepository.findByTypeOrderByNameDesc(criteria);
+            case "dateCreated" -> isAsc
+                    ? postRepository.findByTypeOrderByDateCreatedAsc(criteria)
+                    : postRepository.findByTypeOrderByDateCreatedDesc(criteria);
+            default -> postRepository.findByTypeContainsIgnoreCase(criteria);
+        };
+
+        return resultStream
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+    }
+
+    @Override
+    public List<PostDto> findByCriteriaAndSort(String criteria, String sort, Boolean asc) {
+        boolean isAsc = Boolean.TRUE.equals(asc);
+
+        Stream<Post> resultStream = switch (sort) {
+            case "sell" -> isAsc
+                    ? postRepository.findByCategoryOrderBySellAsc(criteria)
+                    : postRepository.findByCategoryOrderBySellDesc(criteria);
+            case "name" -> isAsc
+                    ? postRepository.findByCategoryOrderByNameAsc(criteria)
+                    : postRepository.findByCategoryOrderByNameDesc(criteria);
+            case "dateCreated" -> isAsc
+                    ? postRepository.findByCategoryOrderByDateCreatedAsc(criteria)
+                    : postRepository.findByCategoryOrderByDateCreatedDesc(criteria);
+            default -> postRepository.findByCategoryContainsIgnoreCase(criteria); // fallback search
+        };
+
+        return resultStream
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+    }
+    @Override
+    public List<PostDto> findPostsWithCriteriaAndSort(QueryDto queryDto) {
         Query mongoQuery = new Query();
 
-        if (queryDto.getTitle() != null && !queryDto.getTitle().trim().isEmpty()) {
-            mongoQuery.addCriteria(Criteria.where("title").regex(queryDto.getTitle().trim(), "i"));
+        if (queryDto.getId() != null) {
+            mongoQuery.addCriteria(Criteria.where("id").regex(queryDto.getId(), "i"));
+        }
+        if (queryDto.getName() != null) {
+            mongoQuery.addCriteria(Criteria.where("name").regex(queryDto.getName(), "i"));
+        }
+        if (queryDto.getCategory() != null) {
+            mongoQuery.addCriteria(Criteria.where("category").regex(queryDto.getCategory(), "i"));
+        }
+        if (queryDto.getType() != null) {
+            mongoQuery.addCriteria(Criteria.where("type").regex(queryDto.getType(), "i"));
+        }
+        if (queryDto.getDesc() != null) {
+            mongoQuery.addCriteria(Criteria.where("desc").regex(queryDto.getDesc(), "i"));
         }
         if (queryDto.getDateFrom() != null) {
-            mongoQuery.addCriteria(Criteria.where("dateFrom").gte(queryDto.getDateFrom()));
-        }
-        if (queryDto.getDateTo() != null) {
-            mongoQuery.addCriteria(Criteria.where("dateFrom").lte(queryDto.getDateTo()));
-        }
-        if (queryDto.getCategory() != null && !queryDto.getCategory().trim().isEmpty()) {
-            mongoQuery.addCriteria(Criteria.where("category").is(queryDto.getCategory().trim()));
-        }
-        if (queryDto.getCreator() != null && !queryDto.getCreator().trim().isEmpty()) {
-            mongoQuery.addCriteria(Criteria.where("creator").regex(queryDto.getCreator().trim(), "i"));
-        }
-        if (queryDto.getProvenance() != null && !queryDto.getProvenance().trim().isEmpty()) {
-            mongoQuery.addCriteria(Criteria.where("provenance").regex(queryDto.getProvenance().trim(), "i"));
-        }
-        if (queryDto.getMaterials() != null && !queryDto.getMaterials().isEmpty()) {
-            mongoQuery.addCriteria(Criteria.where("materials").in(queryDto.getMaterials()));
+            mongoQuery.addCriteria(Criteria.where("dateCreated").gte(queryDto.getDateFrom()));
         }
 
-        Sort.Direction direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        mongoQuery.with(Sort.by(direction, sortField));
+        if (queryDto.getDateTo() != null) {
+            mongoQuery.addCriteria(Criteria.where("dateCreated").lte(queryDto.getDateTo()));
+        }
+
+        if (queryDto.getMinPrice() != null) {
+            mongoQuery.addCriteria(Criteria.where("sell").gte(queryDto.getMinPrice()));
+        }
+        if (queryDto.getMaxPrice() != null) {
+            mongoQuery.addCriteria(Criteria.where("sell").lte(queryDto.getMaxPrice()));
+        }
+
+
+        Sort.Direction direction = Boolean.TRUE.equals(queryDto.getAsc()) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        if (queryDto.getQuery() != null) {
+            mongoQuery.with(Sort.by(direction, queryDto.getQuery()));
+        } else {
+            mongoQuery.with(Sort.by(direction, "name"));
+
+        }
 
         List<Post> posts = mongoTemplate.find(mongoQuery, Post.class);
         return posts.stream()
                 .map(p -> modelMapper.map(p, PostDto.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
